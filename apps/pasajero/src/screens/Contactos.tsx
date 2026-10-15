@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Alert, Text, View } from 'react-native';
-import { formatPhone, normalizeColombianPhone } from '@mototaxi/shared';
+import { CONSENT_TEXT, formatPhone, normalizeColombianPhone } from '@mototaxi/shared';
 import { errorMessage, supabase } from '../lib/supabase';
 import { Banner, Button, Card, colors, Field, Muted, Screen, Title } from '../ui';
 
@@ -95,6 +95,7 @@ export function Contactos({ userId, onBack }: { userId: string; onBack: () => vo
           <Field label="Nombre" value={name} onChangeText={setName} placeholder="Mamá" autoCapitalize="words" maxLength={60} />
           <Field label="Celular" value={phone} onChangeText={setPhone} placeholder="300 123 4567" keyboardType="phone-pad" />
           <Button title="Agregar contacto" onPress={add} loading={busy} />
+          <Muted style={{ fontSize: 13 }}>{CONSENT_TEXT.trustedContactNotice}</Muted>
         </Card>
       )}
 

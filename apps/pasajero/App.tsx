@@ -5,13 +5,14 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import type { Session } from '@supabase/supabase-js';
 import { configMissing, supabase } from './src/lib/supabase';
 import type { PassengerRide } from './src/lib/types';
+import { Autorizacion, loadPrivacyStatus, missingScopes, type PrivacyStatus } from './src/screens/Autorizacion';
 import { Contactos } from './src/screens/Contactos';
 import { Login } from './src/screens/Login';
 import { Nombre } from './src/screens/Nombre';
 import { Pedir } from './src/screens/Pedir';
 import { Resumen } from './src/screens/Resumen';
 import { Viaje } from './src/screens/Viaje';
-import { Banner, colors, Muted, Screen, Title } from './src/ui';
+import { Banner, Button, colors, Muted, Screen, Title } from './src/ui';
 
 /** Respaldo por si se pierde un evento de tiempo real (ms). */
 const RIDE_POLL_MS = 10_000;
@@ -36,6 +37,7 @@ export default function App() {
 function Root() {
   const [session, setSession] = useState<Session | null | undefined>(undefined);
   const [name, setName] = useState<string | null | undefined>(undefined);
+  const [privacy, setPrivacy] = useState<PrivacyStatus | null | undefined>(undefined);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => setSession(data.session));
@@ -45,6 +47,12 @@ function Root() {
 
   const userId = session?.user.id;
 
+  const loadPrivacy = useCallback(() => {
+    setPrivacy(undefined);
+    if (userId) loadPrivacyStatus().then(setPrivacy);
+  }, [userId]);
+  useEffect(loadPrivacy, [loadPrivacy]);
+
   useEffect(() => {
     setName(undefined);
     if (!userId) return;
@@ -52,8 +60,13 @@ function Root() {
       .then(({ data }) => setName(data?.full_name?.trim() || null));
   }, [userId]);
 
-  if (session === undefined || (session && name === undefined)) return <Cargando />;
+  if (session === undefined || (session && (name === undefined || privacy === undefined))) return <Cargando />;
   if (!session) return <Login />;
+  if (privacy === undefined) return <Cargando />;
+  if (privacy === null) return <SinConexion onRetry={loadPrivacy} />;
+  if (missingScopes('pasajero', privacy).length > 0) {
+    return <Autorizacion app="pasajero" status={privacy} onDone={loadPrivacy} />;
+  }
   if (!name) return <Nombre userId={session.user.id} onDone={setName} />;
   return <Viajes userId={session.user.id} firstName={name.split(' ')[0]} />;
 }
@@ -130,6 +143,14 @@ const Cargando = () => (
   <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.bg }}>
     <ActivityIndicator size="large" color={colors.ink} />
   </View>
+);
+
+const SinConexion = ({ onRetry }: { onRetry: () => void }) => (
+  <Screen>
+    <Title>Sin conexión</Title>
+    <Muted>No pudimos conectarnos. Revisa tu internet e intenta de nuevo.</Muted>
+    <Button title="Reintentar" onPress={onRetry} />
+  </Screen>
 );
 
 const FaltaConfig = () => (

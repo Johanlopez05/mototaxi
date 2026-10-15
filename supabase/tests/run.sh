@@ -24,4 +24,6 @@ echo "→ app del pasajero"
 psql -d "$DB" -q -t -f supabase/tests/04_app_pasajero.sql | sed '/^\s*$/d'
 echo "→ seguridad (contactos, viaje compartido, SOS, panel)"
 psql -d "$DB" -q -t -f supabase/tests/05_seguridad.sql | sed '/^\s*$/d'
+echo "→ autorización de datos (Ley 1581)"
+psql -d "$DB" -q -t -f supabase/tests/06_autorizacion.sql | sed '/^\s*$/d'
 psql -d postgres -q -c "drop database $DB"

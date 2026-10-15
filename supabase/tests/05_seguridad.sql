@@ -15,6 +15,7 @@ insert into auth.users (id, phone, raw_user_meta_data) values
  ('00000000-0000-0000-0000-000000000052', '573400000002', '{"full_name":"Mario Rueda"}'),
  ('00000000-0000-0000-0000-000000000053', '573400000003', '{"full_name":"Admin Turno"}'),
  ('00000000-0000-0000-0000-000000000054', '573400000004', '{"full_name":"Otro Pasajero"}');
+\ir _consentir_todos.sql
 update public.profiles set role = 'admin' where id = '00000000-0000-0000-0000-000000000053';
 insert into public.drivers (id, plate, moto_color, status) values ('00000000-0000-0000-0000-000000000052', 'SEG44D', 'azul', 'approved');
 insert into public.driver_documents (driver_id, type, file_path, expires_on, status)

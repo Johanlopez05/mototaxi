@@ -77,6 +77,10 @@ Supabase les da a las funciones `SUPABASE_URL`, `SUPABASE_ANON_KEY` y `SUPABASE_
 
 Sin Twilio, el SOS igual queda registrado y aparece en el panel; solo no salen los SMS.
 
+### Política de datos
+
+Antes de publicar, llena los datos del responsable en `packages/shared/src/legal.ts` (la página `/privacidad` muestra un aviso de borrador mientras falten). Las apps abren la política desde `EXPO_PUBLIC_PRIVACY_URL` (normalmente `https://<panel>/privacidad`).
+
 ### Viaje compartido
 
 El pasajero comparte un enlace `https://<panel>/v/<token>` (WhatsApp, SMS…). Lo abre cualquiera, sin cuenta, mientras el viaje está activo y hasta 30 min después de llegar. Vive en el panel (Next.js), que debe estar publicado (por ejemplo en Vercel) y con su URL en `EXPO_PUBLIC_SHARE_BASE_URL` (app del pasajero) y `SHARE_BASE_URL` (secreto de Supabase).
@@ -98,6 +102,7 @@ npm run typecheck                                  # tipos de las apps
   - [x] Panel: cola de verificación con fotos privadas y aprobar, pedir corrección, suspender o rechazar
 - [x] Fase 3 · Pasajero y viaje: mapa, pedir, asignar, código de 4 dígitos, completar
 - [x] Fase 4 · Capa de seguridad: compartir viaje en vivo (`/v/<token>`), contactos de confianza, SOS con SMS y alertas en el panel, vencimientos
+- [x] Autorización de datos (Ley 1581): política en `/privacidad` y casilla obligatoria en ambas apps
 - [ ] Fase 5 · Piloto con 10–20 conductores en un sector
 
 Detalle en [`docs/producto.md`](docs/producto.md) y [`docs/arquitectura.md`](docs/arquitectura.md).

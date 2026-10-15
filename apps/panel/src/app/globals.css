@@ -514,3 +514,23 @@ a:focus-visible {
 .table tr:last-child td {
   border-bottom: none;
 }
+
+/* Política de privacidad (página pública /privacidad) */
+.legal {
+  max-width: 760px;
+  line-height: 1.6;
+}
+
+.legal section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.legal ul,
+.legal ol {
+  padding-left: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}

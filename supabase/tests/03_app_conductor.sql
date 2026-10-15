@@ -12,6 +12,7 @@ end $$;
 insert into auth.users (id, phone, raw_user_meta_data) values
  ('00000000-0000-0000-0000-0000000000f1', '573300000001', '{"full_name":"Nuevo Conductor"}'),
  ('00000000-0000-0000-0000-0000000000f2', '573300000002', '{"full_name":"Ana María Ruiz"}');
+\ir _consentir_todos.sql
 
 -- 1. Un conductor recién registrado (pendiente) no puede reportar ubicación
 set role authenticated;
@@ -88,6 +89,7 @@ select pg_temp.check((select is_available from public.driver_locations
 
 -- 8. Documentos: enviar a revisión exige los 6 vigentes; re-subir vuelve a "pendiente"
 insert into auth.users (id, phone) values ('00000000-0000-0000-0000-0000000000f3', '573300000003');
+\ir _consentir_todos.sql
 set role authenticated;
 select pg_temp.as_user('00000000-0000-0000-0000-0000000000f3');
 insert into public.drivers (id, plate) values (auth.uid(), 'GGG33C');

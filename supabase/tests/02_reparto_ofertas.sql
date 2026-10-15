@@ -17,6 +17,7 @@ insert into auth.users (id, phone, raw_user_meta_data) values
  ('00000000-0000-0000-0000-0000000000e1', '573200000001', '{"full_name":"Cerca Uno"}'),
  ('00000000-0000-0000-0000-0000000000e2', '573200000002', '{"full_name":"Medio Dos"}'),
  ('00000000-0000-0000-0000-0000000000e3', '573200000003', '{"full_name":"Lejos Tres"}');
+\ir _consentir_todos.sql
 insert into public.drivers (id, plate, status) values
  ('00000000-0000-0000-0000-0000000000e1', 'EEE11A', 'approved'),
  ('00000000-0000-0000-0000-0000000000e2', 'EEE22B', 'approved'),

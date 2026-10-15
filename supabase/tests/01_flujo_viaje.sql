@@ -5,6 +5,7 @@ insert into auth.users (id, phone, raw_user_meta_data) values
  ('00000000-0000-0000-0000-00000000000b', '573000000002', '{"full_name":"Laura R."}'),
  ('00000000-0000-0000-0000-00000000000c', '573000000003', '{"full_name":"Carlos M."}'),
  ('00000000-0000-0000-0000-00000000000d', '573000000004', '{"full_name":"Otro Conductor"}');
+\ir _consentir_todos.sql
 update public.profiles set role = 'admin' where phone = '573000000001';
 
 create or replace function pg_temp.as_user(u text) returns void language plpgsql as $$

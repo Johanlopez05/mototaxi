@@ -73,6 +73,7 @@ Archivos: `supabase/migrations/20261015010000_fase2_ofertas.sql` y `supabase/fun
 | Avisar a contactos por SMS | Servidor (Edge Function `sos-alert`) | `sos_alert_context()`, `mark_sos_notified()` |
 | Ver y atender alertas SOS | Admin | `admin_sos_alerts()`, `admin_update_sos()` |
 | Ver vencimientos próximos | Admin | `admin_expiring_documents()` |
+| Aceptar la política de datos | Pasajero y conductor | `privacy_status()`, `accept_privacy()` |
 | Aprobar conductor | Admin | `admin_review_driver()` |
 | Suspender vencidos | Tarea diaria | `suspend_expired_drivers()` |
 
@@ -90,6 +91,8 @@ Archivos: `supabase/migrations/20261015010000_fase2_ofertas.sql` y `supabase/fun
 | `ratings` | Calificaciones |
 | `trusted_contacts` | Contactos de confianza del pasajero |
 | `sos_alerts` | Alertas de emergencia |
+| `privacy_policy` | Versión vigente de la política de datos |
+| `privacy_consents` | Prueba de cada autorización (quién, qué alcance, versión, cuándo) |
 
 ## Reglas de seguridad
 

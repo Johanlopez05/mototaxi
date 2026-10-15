@@ -32,7 +32,16 @@ npm run test:functions                             # requiere Deno
 
 Fases 1 a 4 completas. La 4 (seguridad): `/v/<token>` público en el panel, contactos de confianza, SOS (pasajero y conductor) con la Edge Function `sos-alert` (SMS por Twilio), y en el panel `/alertas` y `/vencimientos`.
 
-Sigue la fase 5, piloto: desplegar (Supabase, panel en Vercel, builds de EAS), configurar secretos (`SHARE_BASE_URL`, Twilio) y probar con 10–20 conductores en un sector. Pendientes conocidos: calificaciones en la app, política de privacidad (Ley 1581) y aceptación al registrarse, contactos de confianza para conductores.
+Sigue la fase 5, piloto: desplegar (Supabase, panel en Vercel, builds de EAS), configurar secretos (`SHARE_BASE_URL`, Twilio) y probar con 10–20 conductores en un sector. Ya está la autorización de datos (Ley 1581): `/privacidad` en el panel y la casilla obligatoria en ambas apps. Pendientes conocidos: llenar los datos del responsable en `packages/shared/src/legal.ts`, tarea de borrado según los plazos de conservación, calificaciones en la app, contactos de confianza para conductores, "eliminar mi cuenta".
+
+## Autorización de datos (Ley 1581)
+
+- Datos del responsable, versión de la política y textos de las casillas: SOLO en `packages/shared/src/legal.ts`.
+- `privacy_policy` (una fila con la versión vigente) y `privacy_consents` (prueba de cada autorización; no se edita ni se borra). Alcances: `general` y `biometric` (selfie del conductor, dato sensible).
+- El servidor lo exige: `request_ride()` pide `general`; `submit_for_review()` y subir la selfie piden las dos.
+- Cambiar la política = migración que actualice `privacy_policy.version` + mismo valor en `PRIVACY_POLICY_VERSION` (una prueba de shared lo verifica). Todos vuelven a aceptar.
+- Las apps muestran `Autorizacion.tsx` (copia en pasajero y conductor) justo después del login; las casillas empiezan sin marcar.
+- Pruebas 01–05 usan `supabase/tests/_consentir_todos.sql`; la 06 prueba la autorización sin esa ayuda.
 
 ## Capa de seguridad
 

@@ -88,3 +88,4 @@ export const normalizePlate = (plate: string): string => plate.toUpperCase().rep
 
 export * from './format';
 export * from './review';
+export * from './legal';

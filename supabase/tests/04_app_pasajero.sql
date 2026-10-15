@@ -23,6 +23,7 @@ insert into auth.users (id, phone, raw_user_meta_data) values
  ('00000000-0000-0000-0000-0000000000a1', '573400000001', '{"full_name":"Paula Gómez"}'),
  ('00000000-0000-0000-0000-0000000000a2', '573400000002', '{"full_name":"Otro Pasajero"}'),
  ('00000000-0000-0000-0000-0000000000a3', '573400000003', '{"full_name":"Jorge Iván Peña"}');
+\ir _consentir_todos.sql
 
 -- Conductor aprobado y conectado cerca del punto de recogida
 insert into public.drivers (id, plate, moto_color, moto_brand, status)

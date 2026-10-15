@@ -5,11 +5,12 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import type { Session } from '@supabase/supabase-js';
 import { configMissing, supabase } from './src/lib/supabase';
 import type { DocumentRow, DriverRow } from './src/lib/types';
+import { Autorizacion, loadPrivacyStatus, missingScopes, type PrivacyStatus } from './src/screens/Autorizacion';
 import { Documentos } from './src/screens/Documentos';
 import { Inicio } from './src/screens/Inicio';
 import { Login } from './src/screens/Login';
 import { Registro } from './src/screens/Registro';
-import { Banner, colors, Muted, Screen, Title } from './src/ui';
+import { Banner, Button, colors, Muted, Screen, Title } from './src/ui';
 
 /**
  * Navegación por estado:
@@ -32,6 +33,7 @@ function Root() {
   const [driver, setDriver] = useState<DriverRow | null | undefined>(undefined);
   const [documents, setDocuments] = useState<DocumentRow[]>([]);
   const [profileName, setProfileName] = useState('');
+  const [privacy, setPrivacy] = useState<PrivacyStatus | null | undefined>(undefined);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => setSession(data.session));
@@ -58,8 +60,19 @@ function Root() {
     loadDriver();
   }, [loadDriver]);
 
-  if (session === undefined || (session && driver === undefined)) return <Cargando />;
+  const loadPrivacy = useCallback(() => {
+    setPrivacy(undefined);
+    if (userId) loadPrivacyStatus().then(setPrivacy);
+  }, [userId]);
+  useEffect(loadPrivacy, [loadPrivacy]);
+
+  if (session === undefined || (session && (driver === undefined || privacy === undefined))) return <Cargando />;
   if (!session) return <Login />;
+  if (privacy === undefined) return <Cargando />;
+  if (privacy === null) return <SinConexion onRetry={loadPrivacy} />;
+  if (missingScopes('conductor', privacy).length > 0) {
+    return <Autorizacion app="conductor" status={privacy} onDone={loadPrivacy} />;
+  }
   if (!driver) return <Registro userId={session.user.id} initialName={profileName} onDone={loadDriver} />;
   if (driver.status !== 'approved') return <Documentos driver={driver} documents={documents} onChanged={loadDriver} />;
   return <Inicio userId={session.user.id} driver={driver} documents={documents} />;
@@ -69,6 +82,14 @@ const Cargando = () => (
   <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.bg }}>
     <ActivityIndicator size="large" color={colors.ink} />
   </View>
+);
+
+const SinConexion = ({ onRetry }: { onRetry: () => void }) => (
+  <Screen>
+    <Title>Sin conexión</Title>
+    <Muted>No pudimos conectarnos. Revisa tu internet e intenta de nuevo.</Muted>
+    <Button title="Reintentar" onPress={onRetry} />
+  </Screen>
 );
 
 const FaltaConfig = () => (
