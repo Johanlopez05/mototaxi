@@ -16,4 +16,6 @@ for f in supabase/migrations/*.sql; do
 done
 echo "→ flujo de viaje (los ERROR esperados son bloqueos de seguridad que deben ocurrir)"
 psql -d "$DB" -q -f supabase/tests/01_flujo_viaje.sql
+echo "→ reparto de solicitudes"
+psql -d "$DB" -q -t -f supabase/tests/02_reparto_ofertas.sql | sed '/^\s*$/d'
 psql -d postgres -q -c "drop database $DB"

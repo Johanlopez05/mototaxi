@@ -23,15 +23,29 @@ Las dos apps móviles y el panel web comparten **un único backend en Supabase**
 - **En viaje:** transmite cada 3–5 s por un canal de Realtime del viaje; lo escuchan el pasajero y su contacto de confianza.
 - **Segundo plano:** `expo-location` + `expo-task-manager` (Android exige notificación fija).
 
-## Asignación de un viaje
+## Asignación de un viaje (implementado en fase 2)
 
-1. `request_ride()` crea el viaje en estado `searching` y genera el código.
-2. Una Edge Function busca con PostGIS los conductores aprobados y disponibles en 2 km.
-3. Envía la solicitud por push al más cercano; 15 s para responder.
-4. Si rechaza o no responde, pasa al siguiente; tras 3 intentos amplía el radio o avisa al pasajero.
-5. `accept_ride()` asigna de forma atómica: si dos aceptan a la vez, solo gana el primero.
+1. El pasajero llama `request_ride()`: crea el viaje en estado `searching` y genera el código.
+2. Luego invoca la Edge Function `dispatch-ride` con el `ride_id`. Responde 202 y reparte en segundo plano.
+3. La función llama `dispatch_next_offer()` (solo service role): crea una **oferta** en `ride_offers` para el conductor aprobado, disponible y con ubicación fresca **más cercano**, válida 15 s.
+4. Envía el push por Expo. Si el push falla, el conductor igual ve la oferta: la app escucha `ride_offers` por Realtime y al abrir llama `current_offer()`.
+5. El conductor responde con `accept_ride()` o `reject_offer()`. Sin respuesta, la oferta vence.
+6. Se ofrece al siguiente: las 3 primeras ofertas buscan a 2 km, las siguientes a 4 km. Tras 6 ofertas sin éxito, el viaje se cancela y se avisa al pasajero.
+7. `accept_ride()` **exige una oferta vigente** para ese conductor y asigna de forma atómica.
 
-Los conductores **no pueden listar viajes en búsqueda** (RLS): así nadie escoge solo los viajes que le convienen.
+Un conductor nunca recibe dos ofertas a la vez, y nadie puede listar ni escoger viajes por su cuenta (RLS).
+
+```
+pasajero ─ request_ride() ─► rides (searching)
+pasajero ─ invoke('dispatch-ride') ─► Edge Function
+                                        │ loop (máx. 110 s)
+                                        ├─ dispatch_next_offer() ─► ride_offers (pending, 15 s)
+                                        ├─ push Expo ─► conductor
+                                        └─ espera respuesta o vencimiento
+conductor ─ accept_ride() ─► rides (assigned) ─► Realtime ─► pasajero
+```
+
+Archivos: `supabase/migrations/20261015010000_fase2_ofertas.sql` y `supabase/functions/dispatch-ride/`.
 
 ## Estados de un viaje
 
@@ -39,8 +53,11 @@ Los conductores **no pueden listar viajes en búsqueda** (RLS): así nadie escog
 
 | Paso | Quién | Función |
 | --- | --- | --- |
-| Pedir | Pasajero | `request_ride()` |
-| Aceptar | Conductor | `accept_ride()` |
+| Pedir | Pasajero | `request_ride()` + Edge Function `dispatch-ride` |
+| Ofrecer al más cercano | Servidor | `dispatch_next_offer()` |
+| Ver oferta vigente | Conductor | `current_offer()` |
+| Aceptar | Conductor | `accept_ride()` (exige oferta vigente) |
+| Rechazar | Conductor | `reject_offer()` |
 | Llegué | Conductor | `mark_arrived()` |
 | Iniciar con código | Conductor | `start_ride()` (5 intentos máx.) |
 | Terminar | Conductor | `complete_ride()` |
@@ -60,6 +77,7 @@ Los conductores **no pueden listar viajes en búsqueda** (RLS): así nadie escog
 | `driver_locations` | Última posición y disponibilidad |
 | `rides` | Cada viaje y la hora de cada cambio de estado |
 | `ride_codes` | Código de 4 dígitos (solo lo lee el pasajero) |
+| `ride_offers` | Cada oferta de un viaje a un conductor, con su vencimiento |
 | `ratings` | Calificaciones |
 | `trusted_contacts` | Contactos de confianza del pasajero |
 | `sos_alerts` | Alertas de emergencia |

@@ -38,10 +38,29 @@ npm run panel               # panel en http://localhost:3000
    ```
 5. Copia `.env.example` a `.env` en cada app y pon la URL y la anon key del proyecto.
 
+### Edge Functions
+
+```bash
+supabase functions deploy dispatch-ride
+```
+
+Supabase le da a la función `SUPABASE_URL`, `SUPABASE_ANON_KEY` y `SUPABASE_SERVICE_ROLE_KEY`. Si activas la seguridad de push en Expo, agrega `EXPO_ACCESS_TOKEN` con `supabase secrets set`.
+
+### Pruebas
+
+```bash
+PGHOST=localhost PGUSER=postgres npm run test:db   # base de datos (Postgres + PostGIS local)
+npm run test:functions                             # Edge Functions (requiere Deno)
+npm run typecheck                                  # tipos de las apps
+```
+
 ## Estado
 
 - [x] Fase 1 · Base: tablas, RLS, funciones de viaje, SOS y vencimientos
-- [ ] Fase 2 · Conductor y panel: subir documentos, aprobar, botón disponible con ubicación
+- [ ] Fase 2 · Conductor y panel
+  - [x] Reparto de solicitudes al conductor más cercano (`ride_offers` + Edge Function `dispatch-ride`)
+  - [ ] App del conductor: registro, documentos, botón disponible con ubicación, recibir ofertas
+  - [ ] Panel: cola de verificación
 - [ ] Fase 3 · Pasajero y viaje: mapa, pedir, asignar, código de 4 dígitos, completar
 - [ ] Fase 4 · Capa de seguridad: compartir viaje, contactos de confianza, SOS, vencimientos
 - [ ] Fase 5 · Piloto con 10–20 conductores en un sector

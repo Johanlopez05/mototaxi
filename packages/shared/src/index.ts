@@ -11,6 +11,26 @@ export type DocStatus = 'pending' | 'approved' | 'rejected';
 
 export type RideStatus = 'searching' | 'assigned' | 'arrived' | 'in_progress' | 'completed' | 'cancelled';
 
+export type OfferStatus = 'pending' | 'accepted' | 'rejected' | 'expired';
+
+/** Datos que llegan en la notificación push de una solicitud (Edge Function dispatch-ride). */
+export interface RideOfferPushData {
+  type: 'ride_offer';
+  ride_id: string;
+  expires_at: string;
+}
+
+/** Aviso al pasajero cuando ningún conductor tomó el viaje. */
+export interface RideNoDriversPushData {
+  type: 'ride_no_drivers';
+  ride_id: string;
+}
+
+export type PushData = RideOfferPushData | RideNoDriversPushData;
+
+/** Canal de notificaciones de Android para las solicitudes (debe crearse en la app del conductor). */
+export const RIDE_OFFERS_CHANNEL = 'ride-offers';
+
 /** Viajes que todavía están "vivos" (bloquean pedir o aceptar otro). */
 export const ACTIVE_RIDE_STATUSES: readonly RideStatus[] = ['searching', 'assigned', 'arrived', 'in_progress'];
 

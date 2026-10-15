@@ -15,6 +15,8 @@ App de mototaxis enfocada en la **seguridad del pasajero**. Producto y flujos: `
   - Los documentos van al bucket privado `driver-documents` con ruta `<id del conductor>/<tipo>.jpg`.
 - **Expo:** instala paquetes con `npx expo install`, no con `npm install`, para que coincidan con la versión del SDK. Revisa `apps/*/AGENTS.md` antes de usar APIs de Expo o Next.js.
 - **Variables de entorno:** nunca subas `.env`. Las apps usan solo la anon key; la service role key solo existe en Edge Functions.
+- **Edge Functions:** en `supabase/functions/<nombre>/`. La lógica va en un archivo aparte con dependencias inyectadas y su `*_test.ts`; `index.ts` solo conecta Supabase y HTTP.
+- **Viajes:** un conductor solo acepta con una oferta vigente en `ride_offers`. No crees otra vía para asignar viajes.
 
 ## Comandos
 
@@ -23,8 +25,11 @@ npm install
 npm run pasajero | conductor | panel
 npm run typecheck
 PGHOST=localhost PGUSER=postgres npm run test:db   # requiere Postgres + PostGIS local
+npm run test:functions                             # requiere Deno
 ```
 
 ## Siguiente paso (fase 2)
 
-Edge Function que reparte las solicitudes a los conductores más cercanos por push, y en la app del conductor: registro, subida de documentos y botón de disponible con ubicación en segundo plano.
+Ya está: reparto de solicitudes (`ride_offers`, `dispatch_next_offer()`, Edge Function `dispatch-ride`).
+
+Falta, en la app del conductor: registro, subida de documentos al bucket, guardar el push token en `profiles.push_token`, crear el canal Android `ride-offers`, botón de disponible con ubicación en segundo plano, y la pantalla de oferta (escuchar `ride_offers` por Realtime + `current_offer()` al abrir).

@@ -42,6 +42,11 @@ select 'loc directa (debe ser 0)' as t, count(*) from public.driver_locations;
 select public.request_ride(4.6000, -74.0800, 'Parque', 4.6100, -74.0700, 'Centro', 6000) as ride \gset
 select 'codigo visto por pasajera' as t, count(*) from public.ride_codes;
 
+-- El servidor le ofrece el viaje al conductor más cercano (fase 2)
+reset role;
+select 'oferta' as t, outcome, distance_m from public.dispatch_next_offer(:'ride');
+set role authenticated;
+
 -- Conductor acepta; no ve el código
 select pg_temp.as_user('00000000-0000-0000-0000-00000000000c');
 select 'acepta' as t, public.accept_ride(:'ride');
