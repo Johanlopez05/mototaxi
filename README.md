@@ -36,7 +36,8 @@ npm run panel               # panel en http://localhost:3000
    ```sql
    update public.profiles set role = 'admin' where phone = '57XXXXXXXXXX';
    ```
-5. Copia `.env.example` a `.env` en cada app y pon la URL y la anon key del proyecto.
+5. Copia `.env.example` a `.env` en cada app móvil, y a `.env.local` en `apps/panel`, y pon la URL y la anon key del proyecto.
+6. Abre el panel (`npm run panel`), entra con tu número de administrador y revisa a los conductores en **Por revisar**.
 
 ### Probar la app del conductor en tu celular
 
@@ -77,10 +78,10 @@ npm run typecheck                                  # tipos de las apps
 ## Estado
 
 - [x] Fase 1 · Base: tablas, RLS, funciones de viaje, SOS y vencimientos
-- [ ] Fase 2 · Conductor y panel
+- [x] Fase 2 · Conductor y panel
   - [x] Reparto de solicitudes al conductor más cercano (`ride_offers` + Edge Function `dispatch-ride`)
   - [x] App del conductor: registro por SMS, documentos, botón disponible con ubicación en segundo plano, ofertas y viaje
-  - [ ] Panel: cola de verificación
+  - [x] Panel: cola de verificación con fotos privadas y aprobar, pedir corrección, suspender o rechazar
 - [ ] Fase 3 · Pasajero y viaje: mapa, pedir, asignar, código de 4 dígitos, completar
 - [ ] Fase 4 · Capa de seguridad: compartir viaje, contactos de confianza, SOS, vencimientos
 - [ ] Fase 5 · Piloto con 10–20 conductores en un sector

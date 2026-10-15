@@ -51,6 +51,12 @@ export const DRIVER_STATUS_LABEL: Record<DriverStatus, string> = {
   suspended: 'Suspendido',
 };
 
+export const DOC_STATUS_LABEL: Record<DocStatus, string> = {
+  pending: 'Por revisar',
+  approved: 'Aprobado',
+  rejected: 'Por corregir',
+};
+
 /** Los 6 documentos obligatorios, en el orden en que se muestran. */
 export const REQUIRED_DOCS: readonly { type: DocType; label: string; expires: boolean }[] = [
   { type: 'cedula', label: 'Cédula de ciudadanía', expires: false },
@@ -81,3 +87,4 @@ export const PLATE_REGEX = /^[A-Z]{3} ?[0-9]{2}[A-Z]$/;
 export const normalizePlate = (plate: string): string => plate.toUpperCase().replace(/\s+/g, '');
 
 export * from './format';
+export * from './review';

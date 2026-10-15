@@ -28,11 +28,21 @@ PGHOST=localhost PGUSER=postgres npm run test:db   # requiere Postgres + PostGIS
 npm run test:functions                             # requiere Deno
 ```
 
-## Siguiente paso (fase 2)
+## Siguiente paso (fase 3)
 
-Ya está: reparto de solicitudes (`ride_offers`, `dispatch_next_offer()`, Edge Function `dispatch-ride`) y la app del conductor (`apps/conductor/src`): login por SMS, registro, documentos, disponible con ubicación en segundo plano, ofertas y viaje.
+Fase 2 completa: reparto de solicitudes (`ride_offers`, `dispatch_next_offer()`, Edge Function `dispatch-ride`), la app del conductor (`apps/conductor/src`) y el panel con la cola de verificación (`apps/panel`).
 
-Falta: el panel administrativo real (`apps/panel`): cola de verificación con fotos del bucket privado (URLs firmadas) y `admin_review_driver()`.
+Sigue la fase 3, app del pasajero: mapa con `nearby_drivers()`, pedir con `request_ride()` + `dispatch-ride`, ver al conductor y el código de 4 dígitos.
+
+## Panel administrativo
+
+- Next.js 16 con `cacheComponents`: todo lo que lee la sesión, `params` o `searchParams` va dentro de `<Suspense>`. Lee `node_modules/next/dist/docs/` (en `apps/panel`) antes de usar una API de Next.
+- Sesión de Supabase en cookies con `@supabase/ssr` (`src/lib/supabase.ts`); `src/proxy.ts` la renueva y manda a `/login` a quien no tenga sesión.
+- `requireAdmin()` (`src/lib/auth.ts`) en cada consulta y cada Server Action. Solo anon key: los permisos los dan RLS e `is_admin()`.
+- Fotos de documentos con URLs firmadas de 10 min (`createSignedUrls`), nunca públicas.
+- Decisiones con `admin_review_driver()`. Antes de aprobar se revisa `reviewChecklist()` (`packages/shared/src/review.ts`), más estricta que la función SQL: exige fecha en SOAT y técnico-mecánica.
+- `.env.local` con `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_ANON_KEY` (ver `.env.example`).
+- `npm run lint -w @mototaxi/panel` falla porque `next` queda instalado en `apps/panel/node_modules` y `eslint-config-next` en la raíz. Mientras tanto: `NODE_PATH=apps/panel/node_modules`.
 
 ## App del conductor
 
@@ -40,4 +50,4 @@ Falta: el panel administrativo real (`apps/panel`): cola de verificación con fo
 - `index.ts` importa `src/lib/location.ts` primero: la tarea de ubicación debe definirse en el ámbito global.
 - No funciona en Expo Go (ubicación en segundo plano y push). Se prueba con un development build (`eas build --profile development`).
 - `npx expo install` no funciona sin acceso a api.expo.dev; las versiones compatibles están en `node_modules/expo/bundledNativeModules.json`.
-- Utilidades puras (teléfono, fechas, pesos, cuenta regresiva) en `packages/shared/src/format.ts`, con pruebas: `npm test -w @mototaxi/shared`.
+- Utilidades puras (teléfono, fechas, pesos, cuenta regresiva) en `packages/shared/src/format.ts`, y la revisión de documentos en `review.ts`, con pruebas: `npm test -w @mototaxi/shared`.
