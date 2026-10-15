@@ -38,6 +38,26 @@ npm run panel               # panel en http://localhost:3000
    ```
 5. Copia `.env.example` a `.env` en cada app y pon la URL y la anon key del proyecto.
 
+### Probar la app del conductor en tu celular
+
+La ubicación en segundo plano y las notificaciones **no funcionan en Expo Go**. Necesitas un *development build* (una versión de la app con las piezas nativas incluidas), una sola vez:
+
+```bash
+npm install -g eas-cli
+cd apps/conductor
+eas login                                   # cuenta gratuita en expo.dev
+eas init                                    # enlaza el proyecto y guarda el projectId (lo usan las notificaciones)
+eas build --profile development --platform android
+```
+
+Al terminar, EAS te da un enlace para instalar el APK en tu Android. Luego, cada vez que programes:
+
+```bash
+npm run conductor                           # abre el servidor; la app instalada se conecta sola
+```
+
+Alternativa sin EAS, con Android Studio instalado: `npx expo run:android` desde `apps/conductor`.
+
 ### Edge Functions
 
 ```bash
@@ -59,7 +79,7 @@ npm run typecheck                                  # tipos de las apps
 - [x] Fase 1 · Base: tablas, RLS, funciones de viaje, SOS y vencimientos
 - [ ] Fase 2 · Conductor y panel
   - [x] Reparto de solicitudes al conductor más cercano (`ride_offers` + Edge Function `dispatch-ride`)
-  - [ ] App del conductor: registro, documentos, botón disponible con ubicación, recibir ofertas
+  - [x] App del conductor: registro por SMS, documentos, botón disponible con ubicación en segundo plano, ofertas y viaje
   - [ ] Panel: cola de verificación
 - [ ] Fase 3 · Pasajero y viaje: mapa, pedir, asignar, código de 4 dígitos, completar
 - [ ] Fase 4 · Capa de seguridad: compartir viaje, contactos de confianza, SOS, vencimientos

@@ -10,6 +10,7 @@
     "conductor": "npm run start -w @mototaxi/conductor",
     "panel": "npm run dev -w @mototaxi/panel",
     "typecheck": "npm run typecheck --workspaces",
+    "test": "npm test -w @mototaxi/shared && npm run test:functions",
     "test:db": "bash supabase/tests/run.sh",
     "test:functions": "cd supabase/functions && DENO_NO_PACKAGE_JSON=1 deno test && DENO_NO_PACKAGE_JSON=1 deno check */index.ts"
   }

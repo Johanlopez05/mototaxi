@@ -30,6 +30,14 @@ npm run test:functions                             # requiere Deno
 
 ## Siguiente paso (fase 2)
 
-Ya está: reparto de solicitudes (`ride_offers`, `dispatch_next_offer()`, Edge Function `dispatch-ride`).
+Ya está: reparto de solicitudes (`ride_offers`, `dispatch_next_offer()`, Edge Function `dispatch-ride`) y la app del conductor (`apps/conductor/src`): login por SMS, registro, documentos, disponible con ubicación en segundo plano, ofertas y viaje.
 
-Falta, en la app del conductor: registro, subida de documentos al bucket, guardar el push token en `profiles.push_token`, crear el canal Android `ride-offers`, botón de disponible con ubicación en segundo plano, y la pantalla de oferta (escuchar `ride_offers` por Realtime + `current_offer()` al abrir).
+Falta: el panel administrativo real (`apps/panel`): cola de verificación con fotos del bucket privado (URLs firmadas) y `admin_review_driver()`.
+
+## App del conductor
+
+- Navegación por estado en `App.tsx` (sin router): sesión → moto registrada → aprobado.
+- `index.ts` importa `src/lib/location.ts` primero: la tarea de ubicación debe definirse en el ámbito global.
+- No funciona en Expo Go (ubicación en segundo plano y push). Se prueba con un development build (`eas build --profile development`).
+- `npx expo install` no funciona sin acceso a api.expo.dev; las versiones compatibles están en `node_modules/expo/bundledNativeModules.json`.
+- Utilidades puras (teléfono, fechas, pesos, cuenta regresiva) en `packages/shared/src/format.ts`, con pruebas: `npm test -w @mototaxi/shared`.

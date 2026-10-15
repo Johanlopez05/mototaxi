@@ -55,7 +55,11 @@ Archivos: `supabase/migrations/20261015010000_fase2_ofertas.sql` y `supabase/fun
 | --- | --- | --- |
 | Pedir | Pasajero | `request_ride()` + Edge Function `dispatch-ride` |
 | Ofrecer al más cercano | Servidor | `dispatch_next_offer()` |
+| Enviar documentos a revisión | Conductor | `submit_for_review()` (exige 6 vigentes) |
+| Reportar ubicación | Conductor (tarea en segundo plano) | `set_my_location()` |
+| Desconectarse | Conductor | `go_offline()` |
 | Ver oferta vigente | Conductor | `current_offer()` |
+| Ver su viaje en curso | Conductor | `driver_active_ride()` |
 | Aceptar | Conductor | `accept_ride()` (exige oferta vigente) |
 | Rechazar | Conductor | `reject_offer()` |
 | Llegué | Conductor | `mark_arrived()` |

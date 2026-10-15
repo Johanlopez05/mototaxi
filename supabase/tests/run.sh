@@ -18,4 +18,6 @@ echo "→ flujo de viaje (los ERROR esperados son bloqueos de seguridad que debe
 psql -d "$DB" -q -f supabase/tests/01_flujo_viaje.sql
 echo "→ reparto de solicitudes"
 psql -d "$DB" -q -t -f supabase/tests/02_reparto_ofertas.sql | sed '/^\s*$/d'
+echo "→ app del conductor"
+psql -d "$DB" -q -t -f supabase/tests/03_app_conductor.sql | sed '/^\s*$/d'
 psql -d postgres -q -c "drop database $DB"

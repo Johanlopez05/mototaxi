@@ -8,7 +8,11 @@
     "userInterfaceStyle": "light",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "co.mototaxi.conductor"
+      "bundleIdentifier": "co.mototaxi.conductor",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Usamos tu ubicación para que los pasajeros cercanos te encuentren.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Mientras estés disponible o en un viaje, compartimos tu ubicación aunque la app esté cerrada, para enviarte viajes y para la seguridad del pasajero."
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -18,10 +22,51 @@
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "co.mototaxi.conductor"
+      "package": "co.mototaxi.conductor",
+      "permissions": [
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_BACKGROUND_LOCATION",
+        "FOREGROUND_SERVICE",
+        "FOREGROUND_SERVICE_LOCATION",
+        "CAMERA",
+        "POST_NOTIFICATIONS"
+      ],
+      "blockedPermissions": [
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "scheme": "mototaxi-conductor",
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "isAndroidBackgroundLocationEnabled": true,
+          "isAndroidForegroundServiceEnabled": true,
+          "isIosBackgroundLocationEnabled": true,
+          "locationAlwaysAndWhenInUsePermission": "Mientras estés disponible o en un viaje, compartimos tu ubicación aunque la app esté cerrada, para enviarte viajes y para la seguridad del pasajero.",
+          "locationWhenInUsePermission": "Usamos tu ubicación para que los pasajeros cercanos te encuentren."
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "color": "#FFC22E",
+          "defaultChannel": "ride-offers"
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "cameraPermission": "Usamos la cámara para fotografiar tus documentos y tu moto.",
+          "photosPermission": "Puedes elegir de tu galería las fotos de tus documentos.",
+          "microphonePermission": false
+        }
+      ],
+      "expo-task-manager"
+    ]
   }
 }
