@@ -1,0 +1,15 @@
+{
+  "name": "mototaxi",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "pasajero": "npm run start -w @mototaxi/pasajero",
+    "conductor": "npm run start -w @mototaxi/conductor",
+    "panel": "npm run dev -w @mototaxi/panel",
+    "typecheck": "npm run typecheck --workspaces",
+    "test:db": "bash supabase/tests/run.sh"
+  }
+}
