@@ -20,4 +20,6 @@ echo "→ reparto de solicitudes"
 psql -d "$DB" -q -t -f supabase/tests/02_reparto_ofertas.sql | sed '/^\s*$/d'
 echo "→ app del conductor"
 psql -d "$DB" -q -t -f supabase/tests/03_app_conductor.sql | sed '/^\s*$/d'
+echo "→ app del pasajero"
+psql -d "$DB" -q -t -f supabase/tests/04_app_pasajero.sql | sed '/^\s*$/d'
 psql -d postgres -q -c "drop database $DB"

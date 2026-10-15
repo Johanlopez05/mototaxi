@@ -30,7 +30,7 @@ update public.profiles set push_token = 'ExponentPushToken[e1]' where id = '0000
 -- 1. La pasajera pide un viaje
 set role authenticated;
 select pg_temp.as_user('00000000-0000-0000-0000-0000000000b2');
-select public.request_ride(4.70, -74.05, 'Parque', 4.69, -74.06, 'Terminal', 7000) as ride \gset
+select public.request_ride(4.70, -74.05, 'Parque', 4.69, -74.06, 'Terminal') as ride \gset
 reset role;
 
 -- 2. Primera oferta: al más cercano, con su token push
@@ -89,7 +89,7 @@ select pg_temp.check((select is_available from public.driver_locations
 -- 8. Otro pasajero lejos de todos: se cancela por falta de motos
 set role authenticated;
 select pg_temp.as_user('00000000-0000-0000-0000-0000000000b3');
-select public.request_ride(5.20, -74.00, 'Vereda', 5.21, -74.01, 'Pueblo', 5000) as ride2 \gset
+select public.request_ride(5.20, -74.00, 'Vereda', 5.21, -74.01, 'Pueblo') as ride2 \gset
 reset role;
 select pg_temp.check((select outcome from public.dispatch_next_offer(:'ride2')) = 'no_drivers', 'sin motos cerca responde no_drivers');
 select pg_temp.check((select status from public.rides where id = :'ride2') = 'cancelled', 'y el viaje queda cancelado');

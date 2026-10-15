@@ -39,7 +39,7 @@ insert into public.driver_locations (driver_id, location, is_available) values (
 select pg_temp.as_user('00000000-0000-0000-0000-00000000000b');
 select 'cerca' as t, driver_id, distance_m from public.nearby_drivers(4.6000, -74.0800);
 select 'loc directa (debe ser 0)' as t, count(*) from public.driver_locations;
-select public.request_ride(4.6000, -74.0800, 'Parque', 4.6100, -74.0700, 'Centro', 6000) as ride \gset
+select public.request_ride(4.6000, -74.0800, 'Parque', 4.6100, -74.0700, 'Centro') as ride \gset
 select 'codigo visto por pasajera' as t, count(*) from public.ride_codes;
 
 -- El servidor le ofrece el viaje al conductor más cercano (fase 2)

@@ -52,7 +52,7 @@ select 'ok · ubicación imposible rechazada';
 -- 4. Con un viaje en curso, reportar ubicación NO lo vuelve disponible
 select public.set_my_location(4.80, -74.10, true);
 select pg_temp.as_user('00000000-0000-0000-0000-0000000000f2');
-select public.request_ride(4.8001, -74.1001, 'Plaza', 4.81, -74.11, 'Hospital', 6500) as ride \gset
+select public.request_ride(4.8001, -74.1001, 'Plaza', 4.81, -74.11, 'Hospital') as ride \gset
 reset role;
 select pg_temp.check((select driver_id from public.dispatch_next_offer(:'ride')) = '00000000-0000-0000-0000-0000000000f1', 'la oferta le llega');
 set role authenticated;
