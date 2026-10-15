@@ -3,6 +3,8 @@ import { test } from 'node:test';
 import { deepStrictEqual as eq } from 'node:assert/strict';
 import {
   daysUntil,
+  distanceMeters,
+  etaMinutes,
   formatCOP,
   formatDateDMY,
   formatDistance,
@@ -63,4 +65,15 @@ test('cuenta regresiva', () => {
   eq(secondsLeft('2026-10-15T00:00:15.000Z', now), 15);
   eq(secondsLeft('2026-10-15T00:00:14.200Z', now), 15);
   eq(secondsLeft('2026-10-14T23:59:59.000Z', now), 0);
+});
+
+test('distanceMeters: 0,01° de latitud ≈ 1,11 km; mismo punto = 0', () => {
+  eq(Math.round(distanceMeters({ lat: 6.25, lng: -75.57 }, { lat: 6.26, lng: -75.57 })), 1112);
+  eq(distanceMeters({ lat: 4.6, lng: -74.08 }, { lat: 4.6, lng: -74.08 }), 0);
+});
+
+test('etaMinutes: a 20 km/h con factor de calles; mínimo 1 minuto', () => {
+  eq(etaMinutes(0), 1);
+  eq(etaMinutes(1000), 4); // 1,3 km a 20 km/h = 3,9 min
+  eq(etaMinutes(5000), 20);
 });

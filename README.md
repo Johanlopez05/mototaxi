@@ -82,7 +82,7 @@ npm run typecheck                                  # tipos de las apps
   - [x] Reparto de solicitudes al conductor más cercano (`ride_offers` + Edge Function `dispatch-ride`)
   - [x] App del conductor: registro por SMS, documentos, botón disponible con ubicación en segundo plano, ofertas y viaje
   - [x] Panel: cola de verificación con fotos privadas y aprobar, pedir corrección, suspender o rechazar
-- [ ] Fase 3 · Pasajero y viaje: mapa, pedir, asignar, código de 4 dígitos, completar
+- [x] Fase 3 · Pasajero y viaje: mapa, pedir, asignar, código de 4 dígitos, completar
 - [ ] Fase 4 · Capa de seguridad: compartir viaje, contactos de confianza, SOS, vencimientos
 - [ ] Fase 5 · Piloto con 10–20 conductores en un sector
 

@@ -25,7 +25,7 @@ Las dos apps móviles y el panel web comparten **un único backend en Supabase**
 
 ## Asignación de un viaje (implementado en fase 2)
 
-1. El pasajero llama `request_ride()`: crea el viaje en estado `searching` y genera el código.
+1. El pasajero ve el precio con `estimate_fare()` y llama `request_ride()`: crea el viaje en estado `searching`, con la tarifa calculada en el servidor, y genera el código.
 2. Luego invoca la Edge Function `dispatch-ride` con el `ride_id`. Responde 202 y reparte en segundo plano.
 3. La función llama `dispatch_next_offer()` (solo service role): crea una **oferta** en `ride_offers` para el conductor aprobado, disponible y con ubicación fresca **más cercano**, válida 15 s.
 4. Envía el push por Expo. Si el push falla, el conductor igual ve la oferta: la app escucha `ride_offers` por Realtime y al abrir llama `current_offer()`.
@@ -53,7 +53,9 @@ Archivos: `supabase/migrations/20261015010000_fase2_ofertas.sql` y `supabase/fun
 
 | Paso | Quién | Función |
 | --- | --- | --- |
+| Precio estimado | Pasajero | `estimate_fare()` |
 | Pedir | Pasajero | `request_ride()` + Edge Function `dispatch-ride` |
+| Ver su viaje, conductor y código | Pasajero | `passenger_ride()` |
 | Ofrecer al más cercano | Servidor | `dispatch_next_offer()` |
 | Enviar documentos a revisión | Conductor | `submit_for_review()` (exige 6 vigentes) |
 | Reportar ubicación | Conductor (tarea en segundo plano) | `set_my_location()` |

@@ -65,3 +65,20 @@ export function formatDistance(meters: number | null | undefined): string {
 export function secondsLeft(expiresAt: string, nowMs: number): number {
   return Math.max(0, Math.ceil((Date.parse(expiresAt) - nowMs) / 1000));
 }
+
+/** Distancia en línea recta entre dos puntos (metros, fórmula del haverseno). */
+export function distanceMeters(a: { lat: number; lng: number }, b: { lat: number; lng: number }): number {
+  const rad = Math.PI / 180;
+  const dLat = (b.lat - a.lat) * rad;
+  const dLng = (b.lng - a.lng) * rad;
+  const h = Math.sin(dLat / 2) ** 2 + Math.cos(a.lat * rad) * Math.cos(b.lat * rad) * Math.sin(dLng / 2) ** 2;
+  return 2 * 6_371_000 * Math.asin(Math.sqrt(h));
+}
+
+/**
+ * Minutos aproximados en moto por la ciudad: línea recta × 1,3 (calles) a 20 km/h.
+ * Nunca menos de 1. Es un estimado para el pasajero, no una promesa.
+ */
+export function etaMinutes(straightLineMeters: number): number {
+  return Math.max(1, Math.round((straightLineMeters * 1.3) / (20_000 / 60)));
+}

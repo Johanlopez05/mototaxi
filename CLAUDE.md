@@ -28,11 +28,20 @@ PGHOST=localhost PGUSER=postgres npm run test:db   # requiere Postgres + PostGIS
 npm run test:functions                             # requiere Deno
 ```
 
-## Siguiente paso (fase 3)
+## Siguiente paso (fase 4)
 
-Fase 2 completa: reparto de solicitudes (`ride_offers`, `dispatch_next_offer()`, Edge Function `dispatch-ride`), la app del conductor (`apps/conductor/src`) y el panel con la cola de verificación (`apps/panel`).
+Fases 2 y 3 completas: reparto de solicitudes, app del conductor, panel con la cola de verificación y app del pasajero (mapa, precio, pedir, conductor en camino, código, resumen).
 
-Sigue la fase 3, app del pasajero: mapa con `nearby_drivers()`, pedir con `request_ride()` + `dispatch-ride`, ver al conductor y el código de 4 dígitos.
+Sigue la fase 4, capa de seguridad: compartir el viaje (`shared_trip(token)` + página web), contactos de confianza, SOS conectado y avisos de vencimientos en el panel.
+
+## App del pasajero
+
+- Navegación por estado en `App.tsx` (sin router): sesión → nombre → viaje activo / resumen / pedir.
+- Funciona en Expo Go: ubicación solo en primer plano, mapa con `react-native-maps`, direcciones con el geocodificador del teléfono (sin llaves de API).
+- La tarifa la calcula el servidor (`estimate_fare()`, tabla `fare_settings`); `request_ride()` no la recibe.
+- `passenger_ride()` trae el viaje con conductor, moto, ubicación y código; la app la vuelve a leer con cada cambio de `rides` y `driver_locations` (Realtime) y cada 10 s.
+- La foto del conductor es la selfie del bucket privado, con URL firmada; la política solo la deja ver mientras el viaje está activo.
+- `src/ui.tsx` es copia de la del conductor: si cambias una, cambia la otra.
 
 ## Panel administrativo
 

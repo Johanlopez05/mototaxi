@@ -40,7 +40,10 @@ La promesa: **viajar en mototaxi con tranquilidad.** Todo conductor está verifi
 
 **Después:** SOS conectado a contactos, calificaciones, pagos en la app, historial y ganancias detalladas.
 
+## Tarifa
+
+Por distancia, calculada siempre en el servidor (`estimate_fare()`): $3.000 de base + $1.000 por km, con la distancia en línea recta × 1,3 para aproximar las calles. Mínimo $5.000, redondeada hacia arriba a $500, máximo 30 km. Los valores están en la tabla `fare_settings`.
+
 ## Pendiente por decidir
 
-- Tarifa: ¿fija por zona o por distancia?
 - Nombre definitivo de la app (por ahora `mototaxi`).

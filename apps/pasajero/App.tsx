@@ -1,20 +1,136 @@
+import { useCallback, useEffect, useState } from 'react';
+import { ActivityIndicator, AppState, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
-import { RIDE_STATUS_LABEL } from '@mototaxi/shared';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import type { Session } from '@supabase/supabase-js';
+import { configMissing, supabase } from './src/lib/supabase';
+import type { PassengerRide } from './src/lib/types';
+import { Login } from './src/screens/Login';
+import { Nombre } from './src/screens/Nombre';
+import { Pedir } from './src/screens/Pedir';
+import { Resumen } from './src/screens/Resumen';
+import { Viaje } from './src/screens/Viaje';
+import { Banner, colors, Muted, Screen, Title } from './src/ui';
 
-// Pantalla provisional. Fase 3: mapa con motos cercanas (nearby_drivers) y pedir viaje (request_ride).
+/** Respaldo por si se pierde un evento de tiempo real (ms). */
+const RIDE_POLL_MS = 10_000;
+
+/**
+ * Navegación por estado:
+ *   sin sesión → Login
+ *   sin nombre → Nombre
+ *   viaje activo → Viaje (buscando, en camino, llegó, en viaje)
+ *   viaje recién terminado o cancelado → Resumen
+ *   si no → Pedir (mapa)
+ */
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>¿A dónde vas?</Text>
-      <Text style={styles.sub}>{RIDE_STATUS_LABEL.searching}…</Text>
+    <SafeAreaProvider>
       <StatusBar style="dark" />
-    </View>
+      {configMissing ? <FaltaConfig /> : <Root />}
+    </SafeAreaProvider>
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F6F4EE', alignItems: 'center', justifyContent: 'center', gap: 8 },
-  title: { fontSize: 26, fontWeight: '800', color: '#14161A' },
-  sub: { fontSize: 15, color: '#565A63' },
-});
+function Root() {
+  const [session, setSession] = useState<Session | null | undefined>(undefined);
+  const [name, setName] = useState<string | null | undefined>(undefined);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => setSession(data.session));
+    const { data } = supabase.auth.onAuthStateChange((_event, s) => setSession(s));
+    return () => data.subscription.unsubscribe();
+  }, []);
+
+  const userId = session?.user.id;
+
+  useEffect(() => {
+    setName(undefined);
+    if (!userId) return;
+    supabase.from('profiles').select('full_name').eq('id', userId).maybeSingle()
+      .then(({ data }) => setName(data?.full_name?.trim() || null));
+  }, [userId]);
+
+  if (session === undefined || (session && name === undefined)) return <Cargando />;
+  if (!session) return <Login />;
+  if (!name) return <Nombre userId={session.user.id} onDone={setName} />;
+  return <Viajes firstName={name.split(' ')[0]} />;
+}
+
+function Viajes({ firstName }: { firstName: string }) {
+  // rideId se conserva al terminar el viaje para poder mostrar el resumen
+  const [rideId, setRideId] = useState<string | null | undefined>(undefined);
+  const [ride, setRide] = useState<PassengerRide | null>(null);
+  const [dispatchError, setDispatchError] = useState<string | null>(null);
+
+  const load = useCallback(async (id: string | null) => {
+    const { data, error } = await supabase.rpc('passenger_ride', id ? { p_ride_id: id } : {});
+    if (error) return; // se reintenta en el siguiente evento o sondeo
+    const row = ((data as PassengerRide[] | null) ?? [])[0] ?? null;
+    setRide(row);
+    if (!id) setRideId(row?.ride_id ?? null);
+  }, []);
+
+  // Al abrir: ¿tiene un viaje activo?
+  useEffect(() => {
+    load(null);
+  }, [load]);
+
+  // Con viaje: escuchar cambios del viaje y de la ubicación de la moto
+  const driverId = ride?.driver_id ?? null;
+  const active = !!ride && ride.status !== 'completed' && ride.status !== 'cancelled';
+  useEffect(() => {
+    if (!rideId || !active) return;
+    const refresh = () => load(rideId);
+    let channel = supabase
+      .channel(`pasajero-${rideId}`)
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'rides', filter: `id=eq.${rideId}` }, refresh);
+    if (driverId) {
+      channel = channel.on('postgres_changes',
+        { event: '*', schema: 'public', table: 'driver_locations', filter: `driver_id=eq.${driverId}` }, refresh);
+    }
+    channel.subscribe();
+    const poll = setInterval(refresh, RIDE_POLL_MS);
+    const appState = AppState.addEventListener('change', (s) => s === 'active' && refresh());
+    return () => {
+      supabase.removeChannel(channel);
+      clearInterval(poll);
+      appState.remove();
+    };
+  }, [rideId, driverId, active, load]);
+
+  if (rideId === undefined) return <Cargando />;
+
+  if (rideId && ride) {
+    if (ride.status === 'completed' || ride.status === 'cancelled') {
+      return <Resumen ride={ride} onDone={() => { setRideId(null); setRide(null); setDispatchError(null); }} />;
+    }
+    return <Viaje ride={ride} dispatchError={dispatchError} onChanged={() => load(rideId)} />;
+  }
+
+  return (
+    <Pedir
+      firstName={firstName}
+      onRequested={(id, err) => {
+        setDispatchError(err);
+        setRideId(id);
+        load(id);
+      }}
+      onSignOut={() => supabase.auth.signOut()}
+    />
+  );
+}
+
+const Cargando = () => (
+  <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.bg }}>
+    <ActivityIndicator size="large" color={colors.ink} />
+  </View>
+);
+
+const FaltaConfig = () => (
+  <Screen>
+    <Title>Falta configurar Supabase</Title>
+    <Banner tone="warn" title="Crea el archivo apps/pasajero/.env" body="Copia .env.example y pon la URL y la anon key de tu proyecto. Luego reinicia Expo." />
+    <Muted>EXPO_PUBLIC_SUPABASE_URL y EXPO_PUBLIC_SUPABASE_ANON_KEY están en Supabase → Project Settings → API.</Muted>
+  </Screen>
+);
