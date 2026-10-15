@@ -5,6 +5,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import type { Session } from '@supabase/supabase-js';
 import { configMissing, supabase } from './src/lib/supabase';
 import type { PassengerRide } from './src/lib/types';
+import { Contactos } from './src/screens/Contactos';
 import { Login } from './src/screens/Login';
 import { Nombre } from './src/screens/Nombre';
 import { Pedir } from './src/screens/Pedir';
@@ -54,10 +55,11 @@ function Root() {
   if (session === undefined || (session && name === undefined)) return <Cargando />;
   if (!session) return <Login />;
   if (!name) return <Nombre userId={session.user.id} onDone={setName} />;
-  return <Viajes firstName={name.split(' ')[0]} />;
+  return <Viajes userId={session.user.id} firstName={name.split(' ')[0]} />;
 }
 
-function Viajes({ firstName }: { firstName: string }) {
+function Viajes({ userId, firstName }: { userId: string; firstName: string }) {
+  const [showContacts, setShowContacts] = useState(false);
   // rideId se conserva al terminar el viaje para poder mostrar el resumen
   const [rideId, setRideId] = useState<string | null | undefined>(undefined);
   const [ride, setRide] = useState<PassengerRide | null>(null);
@@ -108,9 +110,12 @@ function Viajes({ firstName }: { firstName: string }) {
     return <Viaje ride={ride} dispatchError={dispatchError} onChanged={() => load(rideId)} />;
   }
 
+  if (showContacts) return <Contactos userId={userId} onBack={() => setShowContacts(false)} />;
+
   return (
     <Pedir
       firstName={firstName}
+      onContacts={() => setShowContacts(true)}
       onRequested={(id, err) => {
         setDispatchError(err);
         setRideId(id);

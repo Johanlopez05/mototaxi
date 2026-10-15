@@ -10,6 +10,8 @@ import {
   etaMinutes,
   formatCOP,
 } from '@mototaxi/shared';
+import { SosButton } from '../components/SosButton';
+import { shareTrip } from '../lib/safety';
 import { errorMessage, supabase } from '../lib/supabase';
 import type { PassengerRide } from '../lib/types';
 import { Banner, Button, Card, colors, Label, Muted } from '../ui';
@@ -126,6 +128,17 @@ export function Viaje({ ride, dispatchError, onChanged }: {
           <Muted style={{ fontSize: 13 }}>
             {inProgress ? `Hacia ${ride.destination_address ?? 'tu destino'}` : `Recogida en ${ride.origin_address ?? 'tu ubicación'}`}
           </Muted>
+
+          {!searching ? (
+            <>
+              <Button
+                title="Compartir viaje en vivo"
+                tone="go"
+                onPress={() => shareTrip(ride.ride_id, ride.plate).catch((e) => setError(errorMessage(e)))}
+              />
+              <SosButton rideId={ride.ride_id} />
+            </>
+          ) : null}
 
           {!inProgress ? <Button title="Cancelar viaje" tone="ghost" onPress={cancel} disabled={busy} /> : null}
         </Card>

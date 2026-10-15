@@ -21,8 +21,10 @@ export async function proxy(request: NextRequest) {
   });
 
   const { data } = await supabase.auth.getClaims();
-  const isLogin = request.nextUrl.pathname.startsWith("/login");
-  if (!data?.claims && !isLogin) {
+  const path = request.nextUrl.pathname;
+  // /login y /v/<token> (viaje compartido, para familiares) no piden sesión
+  const isPublic = path.startsWith("/login") || path.startsWith("/v/");
+  if (!data?.claims && !isPublic) {
     const login = request.nextUrl.clone();
     login.pathname = "/login";
     login.search = "";

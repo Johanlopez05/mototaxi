@@ -28,11 +28,17 @@ PGHOST=localhost PGUSER=postgres npm run test:db   # requiere Postgres + PostGIS
 npm run test:functions                             # requiere Deno
 ```
 
-## Siguiente paso (fase 4)
+## Siguiente paso (fase 5)
 
-Fases 2 y 3 completas: reparto de solicitudes, app del conductor, panel con la cola de verificación y app del pasajero (mapa, precio, pedir, conductor en camino, código, resumen).
+Fases 1 a 4 completas. La 4 (seguridad): `/v/<token>` público en el panel, contactos de confianza, SOS (pasajero y conductor) con la Edge Function `sos-alert` (SMS por Twilio), y en el panel `/alertas` y `/vencimientos`.
 
-Sigue la fase 4, capa de seguridad: compartir el viaje (`shared_trip(token)` + página web), contactos de confianza, SOS conectado y avisos de vencimientos en el panel.
+Sigue la fase 5, piloto: desplegar (Supabase, panel en Vercel, builds de EAS), configurar secretos (`SHARE_BASE_URL`, Twilio) y probar con 10–20 conductores en un sector. Pendientes conocidos: calificaciones en la app, política de privacidad (Ley 1581) y aceptación al registrarse, contactos de confianza para conductores.
+
+## Capa de seguridad
+
+- Página pública `apps/panel/src/app/v/[token]`: `proxy.ts` deja pasar `/v/` sin sesión; consulta `shared_trip()` con un cliente anónimo SIN cookies (`src/lib/shared-trip.ts`) y se refresca cada 10 s.
+- La hora de la petición en páginas del panel se toma con `requestTime()` (`src/lib/time.ts`): el lint de React no permite `Date.now()` al renderizar y `cacheComponents` exige esperar la petición.
+- SOS: la app llama `raise_sos()` y luego `functions.invoke('sos-alert')`. Si algo falla, siempre ofrece llamar al 123. El botón se mantiene 3 s (`SosButton`, copia en pasajero y conductor: si cambias uno, cambia el otro).
 
 ## App del pasajero
 

@@ -17,10 +17,11 @@ type Phase = 'locating' | 'no_permission' | 'choose' | 'confirm';
  * Pedir un viaje: el punto de recogida es donde estás; el destino se elige
  * moviendo el mapa (pin en el centro) o escribiendo la dirección.
  */
-export function Pedir({ firstName, onRequested, onSignOut }: {
+export function Pedir({ firstName, onRequested, onSignOut, onContacts }: {
   firstName: string;
   onRequested: (rideId: string, dispatchError: string | null) => void;
   onSignOut: () => void;
+  onContacts: () => void;
 }) {
   const map = useRef<MapView>(null);
   const [phase, setPhase] = useState<Phase>('locating');
@@ -184,7 +185,10 @@ export function Pedir({ firstName, onRequested, onSignOut }: {
       <SafeAreaView edges={['top']} style={{ paddingHorizontal: 16, paddingTop: 8 }} pointerEvents="box-none">
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
           <Text style={pin.chip}>{drivers.length ? `${drivers.length} mototaxi${drivers.length === 1 ? '' : 's'} cerca` : 'Sin mototaxis cerca por ahora'}</Text>
-          <Text onPress={onSignOut} style={[pin.chip, { color: colors.muted }]} accessibilityRole="button">Salir</Text>
+          <View style={{ flexDirection: 'row', gap: 8 }}>
+            <Text onPress={onContacts} style={pin.chip} accessibilityRole="button">Contactos</Text>
+            <Text onPress={onSignOut} style={[pin.chip, { color: colors.muted }]} accessibilityRole="button">Salir</Text>
+          </View>
         </View>
       </SafeAreaView>
 

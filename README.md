@@ -63,9 +63,23 @@ Alternativa sin EAS, con Android Studio instalado: `npx expo run:android` desde 
 
 ```bash
 supabase functions deploy dispatch-ride
+supabase functions deploy sos-alert
 ```
 
-Supabase le da a la función `SUPABASE_URL`, `SUPABASE_ANON_KEY` y `SUPABASE_SERVICE_ROLE_KEY`. Si activas la seguridad de push en Expo, agrega `EXPO_ACCESS_TOKEN` con `supabase secrets set`.
+Supabase les da a las funciones `SUPABASE_URL`, `SUPABASE_ANON_KEY` y `SUPABASE_SERVICE_ROLE_KEY`. Los demás secretos se guardan con `supabase secrets set NOMBRE=valor`:
+
+| Secreto | Para qué | Obligatorio |
+| --- | --- | --- |
+| `SHARE_BASE_URL` | URL pública del panel (p. ej. `https://tu-panel.vercel.app`): el SMS de SOS lleva el enlace `/v/<token>` | Sí |
+| `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN` | Enviar los SMS de SOS a los contactos de confianza | Sí, para SOS por SMS |
+| `TWILIO_FROM` | Número de Twilio (`+1…`) o Messaging Service (`MG…`) | Sí, para SOS por SMS |
+| `EXPO_ACCESS_TOKEN` | Solo si activas la seguridad de push en Expo | No |
+
+Sin Twilio, el SOS igual queda registrado y aparece en el panel; solo no salen los SMS.
+
+### Viaje compartido
+
+El pasajero comparte un enlace `https://<panel>/v/<token>` (WhatsApp, SMS…). Lo abre cualquiera, sin cuenta, mientras el viaje está activo y hasta 30 min después de llegar. Vive en el panel (Next.js), que debe estar publicado (por ejemplo en Vercel) y con su URL en `EXPO_PUBLIC_SHARE_BASE_URL` (app del pasajero) y `SHARE_BASE_URL` (secreto de Supabase).
 
 ### Pruebas
 
@@ -83,7 +97,7 @@ npm run typecheck                                  # tipos de las apps
   - [x] App del conductor: registro por SMS, documentos, botón disponible con ubicación en segundo plano, ofertas y viaje
   - [x] Panel: cola de verificación con fotos privadas y aprobar, pedir corrección, suspender o rechazar
 - [x] Fase 3 · Pasajero y viaje: mapa, pedir, asignar, código de 4 dígitos, completar
-- [ ] Fase 4 · Capa de seguridad: compartir viaje, contactos de confianza, SOS, vencimientos
+- [x] Fase 4 · Capa de seguridad: compartir viaje en vivo (`/v/<token>`), contactos de confianza, SOS con SMS y alertas en el panel, vencimientos
 - [ ] Fase 5 · Piloto con 10–20 conductores en un sector
 
 Detalle en [`docs/producto.md`](docs/producto.md) y [`docs/arquitectura.md`](docs/arquitectura.md).

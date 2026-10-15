@@ -69,7 +69,10 @@ Archivos: `supabase/migrations/20261015010000_fase2_ofertas.sql` y `supabase/fun
 | Terminar | Conductor | `complete_ride()` |
 | Cancelar | Cualquiera de los dos | `cancel_ride()` |
 | SOS | Cualquiera de los dos | `raise_sos()` |
-| Ver viaje compartido | Familiar, sin sesión | `shared_trip(token)` |
+| Ver viaje compartido | Familiar, sin sesión (página `/v/<token>` del panel) | `shared_trip(token)` |
+| Avisar a contactos por SMS | Servidor (Edge Function `sos-alert`) | `sos_alert_context()`, `mark_sos_notified()` |
+| Ver y atender alertas SOS | Admin | `admin_sos_alerts()`, `admin_update_sos()` |
+| Ver vencimientos próximos | Admin | `admin_expiring_documents()` |
 | Aprobar conductor | Admin | `admin_review_driver()` |
 | Suspender vencidos | Tarea diaria | `suspend_expired_drivers()` |
 
@@ -93,5 +96,7 @@ Archivos: `supabase/migrations/20261015010000_fase2_ofertas.sql` y `supabase/fun
 - RLS en todas las tablas: cada quien ve solo lo suyo.
 - Estados importantes solo se cambian desde funciones del servidor.
 - Documentos en el bucket privado `driver-documents`, ruta `<id del conductor>/<tipo>.jpg`.
-- El enlace compartido deja de funcionar cuando el viaje termina.
+- El enlace compartido funciona mientras el viaje está activo y 30 min después de llegar (sin la ubicación del conductor). Un token inventado no muestra nada. La página no se indexa ni manda el token a otros sitios (`no-referrer`).
+- SOS: `raise_sos()` no duplica alertas si se presiona varias veces (10 min); `sos-alert` solo lo dispara quien activó la alerta y envía los SMS una sola vez. Solo el servidor lee los contactos (`sos_alert_context()`).
+- Contactos de confianza: máximo 5, solo celulares colombianos (`+573…`), cada quien ve solo los suyos.
 - Datos personales: Ley 1581 de 2012. Política de privacidad y autorización explícita al registrarse.

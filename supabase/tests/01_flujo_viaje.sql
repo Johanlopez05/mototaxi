@@ -90,7 +90,7 @@ update public.profiles set role = 'admin' where id = auth.uid();
 \set ON_ERROR_STOP on
 
 set role anon;
-select 'compartido tras terminar (debe ser 0 filas)' as t, count(*) from public.shared_trip(:'share_token');
+select 'compartido tras terminar (1 fila: la familia ve la llegada 30 min, sin ubicación)' as t, count(*) from public.shared_trip(:'share_token');
 
 reset role;
 update public.driver_documents set expires_on = current_date - 1 where type = 'soat';

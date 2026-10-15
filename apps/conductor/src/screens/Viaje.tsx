@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Alert, Linking, Text, View } from 'react-native';
 import { formatCOP, formatPhone } from '@mototaxi/shared';
+import { SosButton } from '../components/SosButton';
 import { errorMessage, supabase } from '../lib/supabase';
 import type { ActiveRide } from '../lib/types';
 import { Banner, Button, Card, colors, Field, Label, Muted, Screen, Title } from '../ui';
@@ -126,6 +127,8 @@ export function Viaje({ ride, onChanged }: { ride: ActiveRide; onChanged: () => 
           <Button title={`Finalizar y cobrar ${formatCOP(ride.fare)}`} tone="go" onPress={finish} loading={busy} />
         </>
       ) : null}
+
+      <SosButton rideId={ride.ride_id} />
 
       {goingToPickup ? <Button title="Cancelar viaje" tone="ghost" onPress={cancel} disabled={busy} /> : null}
 

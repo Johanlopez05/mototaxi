@@ -424,3 +424,93 @@ a:focus-visible {
     position: static;
   }
 }
+
+/* Viaje compartido (página pública /v/<token>) */
+.trip-page {
+  max-width: 560px;
+}
+
+.trip-page .facts dd {
+  margin-bottom: 6px;
+}
+
+.sos-banner {
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.small {
+  font-size: 13px;
+}
+
+/* Navegación principal */
+.topbar {
+  flex-wrap: wrap;
+}
+
+.mainnav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  flex: 1 1 auto;
+}
+
+.mainnav a {
+  padding: 6px 10px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.mainnav a:hover {
+  background: var(--bg);
+  color: var(--ink);
+}
+
+.count.sos-count {
+  background: var(--bad);
+  color: var(--surface);
+  font-weight: 700;
+}
+
+/* Alertas SOS */
+.sos-card.open {
+  border-color: var(--bad);
+  border-width: 2px;
+}
+
+.sos-card.attending {
+  border-color: var(--warn);
+}
+
+/* Tabla de vencimientos */
+.table-wrap {
+  overflow-x: auto;
+  padding: 0;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  text-align: left;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+
+.table th {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.table tr:last-child td {
+  border-bottom: none;
+}

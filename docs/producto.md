@@ -38,7 +38,9 @@ La promesa: **viajar en mototaxi con tranquilidad.** Todo conductor está verifi
 
 **Entra:** registro, documentos y aprobación, mapa en tiempo real, pedir/aceptar/completar, ficha del conductor, código de 4 dígitos, compartir viaje.
 
-**Después:** SOS conectado a contactos, calificaciones, pagos en la app, historial y ganancias detalladas.
+**Seguridad (fase 4):** compartir el viaje en vivo con un enlace, hasta 5 contactos de confianza, SOS (mantener 3 s) que avisa por SMS a los contactos y al panel, y vencimientos de SOAT y técnico-mecánica en el panel.
+
+**Después:** calificaciones, pagos en la app, historial y ganancias detalladas.
 
 ## Tarifa
 
