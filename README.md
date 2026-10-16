@@ -62,11 +62,11 @@ Alternativa sin EAS, con Android Studio instalado: `npx expo run:android` desde 
 ### Edge Functions
 
 ```bash
-supabase functions deploy dispatch-ride
-supabase functions deploy sos-alert
+supabase functions deploy dispatch-ride --no-verify-jwt
+supabase functions deploy sos-alert --no-verify-jwt
 ```
 
-Supabase les da a las funciones `SUPABASE_URL`, `SUPABASE_ANON_KEY` y `SUPABASE_SERVICE_ROLE_KEY`. Los demás secretos se guardan con `supabase secrets set NOMBRE=valor`:
+Supabase les da a las funciones `SUPABASE_URL` y las llaves (`SUPABASE_PUBLISHABLE_KEYS` / `SUPABASE_SECRET_KEYS`, o las anteriores `SUPABASE_ANON_KEY` / `SUPABASE_SERVICE_ROLE_KEY`; ver `supabase/functions/_shared/keys.ts`). Despliega con `--no-verify-jwt`: cada función verifica la sesión del usuario en su código. Los demás secretos se guardan con `supabase secrets set NOMBRE=valor`:
 
 | Secreto | Para qué | Obligatorio |
 | --- | --- | --- |

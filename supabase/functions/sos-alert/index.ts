@@ -9,17 +9,19 @@
 //   SHARE_BASE_URL → URL pública del panel, p. ej. https://panel.tumototaxi.co
 
 import { createClient } from 'npm:@supabase/supabase-js@2';
+import { supabaseKey } from '../_shared/keys.ts';
 import { notifyContacts, type SosContext, type SosDeps } from './alert.ts';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
-const ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY')!;
-const SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+// Llaves nuevas (publishable/secret) con respaldo en las anteriores: ver ../_shared/keys.ts
+const PUBLISHABLE_KEY = supabaseKey('publishable', (name) => Deno.env.get(name));
+const SECRET_KEY = supabaseKey('secret', (name) => Deno.env.get(name));
 const TWILIO_SID = Deno.env.get('TWILIO_ACCOUNT_SID');
 const TWILIO_TOKEN = Deno.env.get('TWILIO_AUTH_TOKEN');
 const TWILIO_FROM = Deno.env.get('TWILIO_FROM');
 const SHARE_BASE_URL = Deno.env.get('SHARE_BASE_URL')?.replace(/\/+$/, '') || null;
 
-const admin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, { auth: { persistSession: false } });
+const admin = createClient(SUPABASE_URL, SECRET_KEY, { auth: { persistSession: false } });
 
 const json = (status: number, body: unknown) =>
   new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
@@ -57,7 +59,7 @@ const deps: SosDeps = {
 Deno.serve(async (req) => {
   if (req.method !== 'POST') return json(405, { error: 'Usa POST' });
 
-  const asUser = createClient(SUPABASE_URL, ANON_KEY, {
+  const asUser = createClient(SUPABASE_URL, PUBLISHABLE_KEY, {
     global: { headers: { Authorization: req.headers.get('Authorization') ?? '' } },
     auth: { persistSession: false },
   });

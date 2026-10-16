@@ -15,6 +15,7 @@ App de mototaxis enfocada en la **seguridad del pasajero**. Producto y flujos: `
   - Los documentos van al bucket privado `driver-documents` con ruta `<id del conductor>/<tipo>.jpg`.
 - **Expo:** instala paquetes con `npx expo install`, no con `npm install`, para que coincidan con la versión del SDK. Revisa `apps/*/AGENTS.md` antes de usar APIs de Expo o Next.js.
 - **Variables de entorno:** nunca subas `.env`. Las apps usan solo la anon key; la service role key solo existe en Edge Functions.
+- **Llaves de Supabase:** las anon/service_role se retiran a finales de 2026. En apps y panel la variable `*_SUPABASE_ANON_KEY` lleva la **publishable key** (`sb_publishable_…`). En Edge Functions usa `supabaseKey()` de `supabase/functions/_shared/keys.ts` (nuevas con respaldo en las anteriores).
 - **Edge Functions:** en `supabase/functions/<nombre>/`. La lógica va en un archivo aparte con dependencias inyectadas y su `*_test.ts`; `index.ts` solo conecta Supabase y HTTP.
 - **Viajes:** un conductor solo acepta con una oferta vigente en `ride_offers`. No crees otra vía para asignar viajes.
 

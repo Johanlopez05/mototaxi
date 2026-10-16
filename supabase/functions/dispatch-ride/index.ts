@@ -6,16 +6,18 @@
 // se entera del resultado escuchando su fila de `rides` por Realtime.
 
 import { createClient } from 'npm:@supabase/supabase-js@2';
+import { supabaseKey } from '../_shared/keys.ts';
 import { type DispatchDeps, type NextOffer, type PushMessage, runDispatch } from './dispatcher.ts';
 
 declare const EdgeRuntime: { waitUntil(promise: Promise<unknown>): void } | undefined;
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
-const ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY')!;
-const SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+// Llaves nuevas (publishable/secret) con respaldo en las anteriores: ver ../_shared/keys.ts
+const PUBLISHABLE_KEY = supabaseKey('publishable', (name) => Deno.env.get(name));
+const SECRET_KEY = supabaseKey('secret', (name) => Deno.env.get(name));
 const EXPO_ACCESS_TOKEN = Deno.env.get('EXPO_ACCESS_TOKEN'); // opcional, si activas la seguridad de push en Expo
 
-const admin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, { auth: { persistSession: false } });
+const admin = createClient(SUPABASE_URL, SECRET_KEY, { auth: { persistSession: false } });
 
 const json = (status: number, body: unknown) =>
   new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
@@ -68,7 +70,7 @@ Deno.serve(async (req) => {
 
   // 1. ¿Quién llama? (el token de sesión del pasajero)
   const authHeader = req.headers.get('Authorization') ?? '';
-  const asUser = createClient(SUPABASE_URL, ANON_KEY, {
+  const asUser = createClient(SUPABASE_URL, PUBLISHABLE_KEY, {
     global: { headers: { Authorization: authHeader } },
     auth: { persistSession: false },
   });
